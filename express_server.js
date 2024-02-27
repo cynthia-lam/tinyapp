@@ -30,8 +30,9 @@ function generateRandomString() {
 
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
-  res.redirect( "/urls/:id");
-  urlDatabase[generateRandomString()] = req.body.longURL;
+  const shortURL = generateRandomString();
+  res.redirect(`/urls/${shortURL}`);
+  urlDatabase[shortURL] = req.body.longURL;
 });
 
 app.get("/", (req, res) => {
