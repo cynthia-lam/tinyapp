@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/cynthia-lam/tinyapp/issues"
   },
-  "homepage": "https://github.com/cynthia-lam/tinyapp#readme"
+  "homepage": "https://github.com/cynthia-lam/tinyapp#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
 }
