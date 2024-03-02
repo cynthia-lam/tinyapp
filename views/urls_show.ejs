@@ -42,7 +42,7 @@
           Short URL ID: <a href="/u/<%= id %>"><%= id %></a>
         </p>
         <p class="card-body text-center">
-          <form>
+          <form method="POST" action="/urls/<%= id %>">
             <label for="longURLedit">Edit the long URL by entering a new URL</label>
           <input
             class="form-control"
