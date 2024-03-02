@@ -28,6 +28,7 @@ function generateRandomString() {
   return result;
 };
 
+// Form to create a new short url on new url page
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
   const shortURL = generateRandomString();
@@ -35,11 +36,17 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
+// Form on my urls page to delete a url
 app.post("/urls/:id/delete", (req, res) => {
   const id = req.params.id;
-  console.log(id);
-  console.log(typeof id);
   delete urlDatabase[id];
+  res.redirect("/urls");
+});
+
+// Form to edit longURL on show page
+app.post("/urls/:id", (req, res) => {
+  const id = req.params.id;
+  urlDatabase[id] = req.body.longURLedit;
   res.redirect("/urls");
 });
 
@@ -68,20 +75,27 @@ app.get("/set", (req, res) => {
   res.send(`a = ${a}`);
  });
 
- // Apply ejs template files
+
+ /******************************************************************** 
+ Apply ejs template files
+**********************************************************************/
+ // index
  app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
+// new URLs
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+// showing details of one short -> long URL
 app.get("/urls/:id", (req, res) => {
   const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id] };
   res.render("urls_show", templateVars);
 });
+
 
 // Redirect u/shortURL to the longURL
 app.get("/u/:id", (req, res) => {
