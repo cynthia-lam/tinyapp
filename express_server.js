@@ -43,18 +43,22 @@ app.post("/urls/:id/delete", (req, res) => {
   res.redirect("/urls");
 });
 
+// Home page just says hello
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
+// Page to see json obj for urlDatabase
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
+// Showing how HTML can be sent 
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
+// Showing that different pages have different 'scopes'
 app.get("/set", (req, res) => {
   const a = 1;
   res.send(`a = ${a}`);
@@ -64,6 +68,7 @@ app.get("/set", (req, res) => {
   res.send(`a = ${a}`);
  });
 
+ // Apply ejs template files
  app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
@@ -78,6 +83,7 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+// Redirect u/shortURL to the longURL
 app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id]
   res.redirect(longURL);
