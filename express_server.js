@@ -28,6 +28,13 @@ function generateRandomString() {
   return result;
 };
 
+// Handle /login
+app.post("/login", (req, res) => {
+  const enteredUsername = req.body.username;
+  res.cookie("username", enteredUsername); 
+  res.redirect("/urls");
+});
+
 // Form to create a new short url on new url page
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
