@@ -68,17 +68,22 @@ app.post("/register", (req, res) => {
   const password = req.body.password;
 
   //ERROR HANDLING:
+  const getUserByEmail = function(emailToCheck){
+    for (const user in users) {
+      if (users[user].email === emailToCheck){
+        return users[user];
+      }
+    }
+  };
+
   // if email or password are empty
   if (!email || !password) {
     return res.status(400).send("Email and password are required");
   }
 
   // if email already exists
-  for (const user in users) {
-    console.log(user);
-    if (users[user].email === email){
-      return res.status(400).send("Account already exists");
-    }
+  if (getUserByEmail(email)) {
+    return res.status(400).send("Account already exists");
   }
   
   // if error free, add to global users object
