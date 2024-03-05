@@ -174,19 +174,11 @@ app.get("/urls/:id", (req, res) => {
 
 // Register page
 app.get("/register", (req, res) => {
-  const currentUser = req.cookies.user_id;
-  const templateVars = { email: req.body.email,
-                          password: req.body.password,
-                          user: users[currentUser]};
   res.render("register", templateVars);
 });
 
 // Login page
 app.get("/login", (req, res) => {
-  const currentUser = req.cookies.user_id;
-  const templateVars = { email: req.body.email,
-                          password: req.body.password,
-                          user: users[currentUser]};
   res.render("login", templateVars);
 });
 
