@@ -29,7 +29,7 @@ app.listen(PORT, () => {
 });
 
 // middleware
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true })); // allows you to read body
 app.use(cookieParser());
 
 // create a random string to be shortURL
@@ -64,11 +64,11 @@ app.post("/register", (req, res) => {
   res.cookie("user_id", user_id); 
   const email = req.body.email;
   const password = req.body.password;
-  // console.log("Users before: ", users);
+  console.log("Users before: ", users);
   users[user_id] = {user_id: user_id, 
                email: email,
               password: password};
-  // console.log("Users after: ", users);
+  console.log("Users after: ", users);
   res.redirect("/urls");
 });
 
@@ -125,29 +125,38 @@ app.get("/set", (req, res) => {
 **********************************************************************/
  // Main page
  app.get("/urls", (req, res) => {
+  const currentUser = req.cookies.user_id;
+  // console.log("this is user_id: ", req.cookies["user_id"]);
   const templateVars = { urls: urlDatabase,
-                          username: req.cookies["username"] };
+                          username: req.cookies["username"],
+                        user: users[currentUser]};
   res.render("urls_index", templateVars);
 });
 
 // New URL page
 app.get("/urls/new", (req, res) => {
-  const templateVars = { username: req.cookies["username"] };
+  const currentUser = req.cookies.user_id;
+  const templateVars = { username: req.cookies["username"],
+  user: users[currentUser] };
   res.render("urls_new", templateVars);
 });
 
 // Show page
 app.get("/urls/:id", (req, res) => {
+  const currentUser = req.cookies.user_id;
   const templateVars = { id: req.params.id,
                         longURL: urlDatabase[req.params.id],
-                        username: req.cookies["username"] };
+                        username: req.cookies["username"],
+                        user: users[currentUser] };
   res.render("urls_show", templateVars);
 });
 
 // Register page
 app.get("/register", (req, res) => {
+  const currentUser = req.cookies.user_id;
   const templateVars = { email: req.body.email,
-                          password: req.body.password};
+                          password: req.body.password,
+                          user: users[currentUser]};
   res.render("register", templateVars);
 });
 
