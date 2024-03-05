@@ -60,15 +60,31 @@ app.post("/logout", (req, res) => {
 
 // Register
 app.post("/register", (req, res) => {
+  // generate random user_id, save to cookie
   const user_id = generateRandomString();
   res.cookie("user_id", user_id); 
+
   const email = req.body.email;
   const password = req.body.password;
-  console.log("Users before: ", users);
+
+  //ERROR HANDLING:
+  // if email or password are empty
+  if (!email || !password) {
+    return res.status(400).send("Email and password are required");
+  }
+
+  // if email already exists
+  for (const user in users) {
+    console.log(user);
+    if (users[user].email === email){
+      return res.status(400).send("Account already exists");
+    }
+  }
+  
+  // if error free, add to global users object
   users[user_id] = {user_id: user_id, 
                email: email,
               password: password};
-  console.log("Users after: ", users);
   res.redirect("/urls");
 });
 
