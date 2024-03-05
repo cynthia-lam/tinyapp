@@ -38,6 +38,12 @@ app.post("/login", (req, res) => {
   res.redirect("/urls");
 });
 
+// Handle /logout
+app.post("/logout", (req, res) => {
+  res.clearCookie("username"); 
+  res.redirect("/urls");
+});
+
 // Form to create a new short url on new url page
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
