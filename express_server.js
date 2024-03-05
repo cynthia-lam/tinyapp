@@ -10,7 +10,6 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
@@ -19,6 +18,7 @@ app.listen(PORT, () => {
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// create a random string to be shortURL
 function generateRandomString() {
   let result = "";
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -44,7 +44,7 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
-// Form to create a new short url on new url page
+// Using HTML form to add newly generated short url and user inputted long url into database
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
   const shortURL = generateRandomString();
@@ -52,14 +52,14 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
-// Form on my urls page to delete a url
+// Form on My URLs page to delete a url
 app.post("/urls/:id/delete", (req, res) => {
   const id = req.params.id;
   delete urlDatabase[id];
   res.redirect("/urls");
 });
 
-// Form to edit longURL on show page
+// Form on show URL page to edit a long URL
 app.post("/urls/:id", (req, res) => {
   const id = req.params.id;
   urlDatabase[id] = req.body.longURLedit;
