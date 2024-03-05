@@ -117,6 +117,13 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+// Show page
+app.get("/register", (req, res) => {
+  const templateVars = { email: req.body.email,
+                        name: req.body.name};
+  res.render("register", templateVars);
+});
+
 // Redirect u/shortURL to the longURL
 app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id]
