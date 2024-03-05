@@ -5,9 +5,23 @@ const PORT = 8080; // default port 8080
 
 app.set("view engine", "ejs");
 
+// creating our database objects
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
+};
+
+const users = {
+  userRandomID: {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur",
+  },
+  user2RandomID: {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk",
+  },
 };
 
 app.listen(PORT, () => {
@@ -41,6 +55,20 @@ app.post("/login", (req, res) => {
 // Handle /logout
 app.post("/logout", (req, res) => {
   res.clearCookie("username"); 
+  res.redirect("/urls");
+});
+
+// Register
+app.post("/register", (req, res) => {
+  const user_id = generateRandomString();
+  res.cookie("user_id", user_id); 
+  const email = req.body.email;
+  const password = req.body.password;
+  // console.log("Users before: ", users);
+  users[user_id] = {user_id: user_id, 
+               email: email,
+              password: password};
+  // console.log("Users after: ", users);
   res.redirect("/urls");
 });
 
@@ -99,7 +127,6 @@ app.get("/set", (req, res) => {
  app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase,
                           username: req.cookies["username"] };
-                          // console.log(req.cookies["username"]);
   res.render("urls_index", templateVars);
 });
 
@@ -117,7 +144,7 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-// Show page
+// Register page
 app.get("/register", (req, res) => {
   const templateVars = { email: req.body.email,
                           password: req.body.password};
