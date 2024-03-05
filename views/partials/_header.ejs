@@ -21,9 +21,9 @@
     <div class="navbar-nav">
       
         <!-- Logged in: 'Logged in as: username', logout button-->
-        <% if(username){ %>
+        <% if(user){ %>
           <form method="POST" action="/logout">
-          <label for="username">Logged in as: <%= username %>!</label>
+          <label for="username">Logged in as: <%= user.email %>!</label>
           <button type="submit" class="btn btn-primary">Logout</button>
         </form>
         <!-- Logged out: 'Please enter username', input, login button-->
