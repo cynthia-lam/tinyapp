@@ -120,7 +120,7 @@ app.get("/urls/:id", (req, res) => {
 // Show page
 app.get("/register", (req, res) => {
   const templateVars = { email: req.body.email,
-                        name: req.body.name};
+                          password: req.body.password};
   res.render("register", templateVars);
 });
 
