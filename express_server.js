@@ -174,12 +174,12 @@ app.get("/urls/:id", (req, res) => {
 
 // Register page
 app.get("/register", (req, res) => {
-  res.render("register", templateVars);
+  res.render("register");
 });
 
 // Login page
 app.get("/login", (req, res) => {
-  res.render("login", templateVars);
+  res.render("login");
 });
 
 // Redirect u/shortURL to the longURL
