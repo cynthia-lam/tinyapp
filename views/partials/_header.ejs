@@ -26,17 +26,10 @@
           <label for="username">Logged in as: <%= user.email %>!</label>
           <button type="submit" class="btn btn-primary">Logout</button>
         </form>
-        <!-- Logged out: 'Please enter username', input, login button-->
+        <!-- Logged out: login button, register button-->
         <% } else{ %>  
-          <form method="POST" action="/login">
-          <input
-          type="text"
-          name="username"
-          placeholder="Username"
-          style="width: 300px; margin: 1em"
-        />
-        <button type="submit" class="btn btn-primary">Login</button>
-      </form>
+          <a href="/login"><button type="submit" class="btn btn-primary">Login</button></a>
+          <a href="/register"><button type="submit" class="btn btn-primary">Register</button></a>
        <% } %>
     </div>
   </nav>
