@@ -54,7 +54,7 @@ app.post("/login", (req, res) => {
 
 // Handle /logout
 app.post("/logout", (req, res) => {
-  res.clearCookie("username"); 
+  res.clearCookie("user_id"); 
   res.redirect("/urls");
 });
 
@@ -174,12 +174,18 @@ app.get("/urls/:id", (req, res) => {
 
 // Register page
 app.get("/register", (req, res) => {
-  res.render("register");
+  const currentUser = req.cookies.user_id;
+  const templateVars = { username: req.cookies["username"],
+  user: users[currentUser] };
+  res.render("register", templateVars);
 });
 
 // Login page
 app.get("/login", (req, res) => {
-  res.render("login");
+  const currentUser = req.cookies.user_id;
+  const templateVars = { username: req.cookies["username"],
+  user: users[currentUser] };
+  res.render("login", templateVars);
 });
 
 // Redirect u/shortURL to the longURL
