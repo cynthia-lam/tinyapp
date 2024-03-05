@@ -19,15 +19,25 @@
       </div>
     </div>
     <div class="navbar-nav">
-      <form method="POST" action="/login">
-        <label for="username">Welcome, <%= username %>!</label>
-        <input
+      
+        <!-- Logged in: 'Logged in as: username', logout button-->
+        <% if(username){ %>
+          <form method="POST" action="/logout">
+          <label for="username">Logged in as: <%= username %>!</label>
+          <button type="submit" class="btn btn-primary">Logout</button>
+        </form>
+        <!-- Logged out: 'Please enter username', input, login button-->
+        <% } else{ %>  
+          <form method="POST" action="/login">
+          <input
           type="text"
           name="username"
+          placeholder="Username"
           style="width: 300px; margin: 1em"
         />
         <button type="submit" class="btn btn-primary">Login</button>
       </form>
+       <% } %>
     </div>
   </nav>
 </header>
