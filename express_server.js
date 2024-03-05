@@ -181,6 +181,15 @@ app.get("/register", (req, res) => {
   res.render("register", templateVars);
 });
 
+// Login page
+app.get("/login", (req, res) => {
+  const currentUser = req.cookies.user_id;
+  const templateVars = { email: req.body.email,
+                          password: req.body.password,
+                          user: users[currentUser]};
+  res.render("login", templateVars);
+});
+
 // Redirect u/shortURL to the longURL
 app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id]
