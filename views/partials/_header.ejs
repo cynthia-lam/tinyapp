@@ -20,10 +20,10 @@
     </div>
     <div class="navbar-nav">
       
-        <!-- Logged in: 'Logged in as: username', logout button-->
+        <!-- Logged in: 'Logged in as: user_id', logout button-->
         <% if(user){ %>
           <form method="POST" action="/logout">
-          <label for="username">Logged in as: <%= user.email %>!</label>
+          <label for="user_id">Logged in as: <%= user.email %>!</label>
           <button type="submit" class="btn btn-primary">Logout</button>
         </form>
         <!-- Logged out: login button, register button-->

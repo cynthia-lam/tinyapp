@@ -78,7 +78,8 @@ app.post("/login", (req, res) => {
   for (const user in users) {
     if (users[user].email === email && users[user].password === password) { // if the email and password match
       console.log("email and pw match");
-      res.cookie("user_id", user.id);
+      res.cookie("user_id", users[user].id);
+      console.log(req.cookies.user_id);
       res.redirect("/urls");
     } else if (users[user].email === email) { // if email is in obj but password is not
       console.log(`user.email: ${users[user].email}, email: ${email}`);
@@ -87,17 +88,12 @@ app.post("/login", (req, res) => {
       return res.status(403).send("Account with email does not exist");
     }
   }
-
-  // old code below
-  // const enteredUsername = req.body.username;
-  // res.cookie("username", enteredUsername); 
-  // res.redirect("/urls");
 });
 
 // Handle /logout
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id"); 
-  res.redirect("/urls");
+  res.redirect("/login");
 });
 
 // Register
@@ -187,7 +183,6 @@ app.get("/set", (req, res) => {
   const currentUser = req.cookies.user_id;
   // console.log("this is user_id: ", req.cookies["user_id"]);
   const templateVars = { urls: urlDatabase,
-                          username: req.cookies["username"],
                         user: users[currentUser]};
   res.render("urls_index", templateVars);
 });
@@ -195,8 +190,7 @@ app.get("/set", (req, res) => {
 // New URL page
 app.get("/urls/new", (req, res) => {
   const currentUser = req.cookies.user_id;
-  const templateVars = { username: req.cookies["username"],
-  user: users[currentUser] };
+  const templateVars = { user: users[currentUser] };
   res.render("urls_new", templateVars);
 });
 
@@ -205,7 +199,6 @@ app.get("/urls/:id", (req, res) => {
   const currentUser = req.cookies.user_id;
   const templateVars = { id: req.params.id,
                         longURL: urlDatabase[req.params.id],
-                        username: req.cookies["username"],
                         user: users[currentUser] };
   res.render("urls_show", templateVars);
 });
@@ -213,16 +206,14 @@ app.get("/urls/:id", (req, res) => {
 // Register page
 app.get("/register", (req, res) => {
   const currentUser = req.cookies.user_id;
-  const templateVars = { username: req.cookies["username"],
-  user: users[currentUser] };
+  const templateVars = { user: users[currentUser] };
   res.render("register", templateVars);
 });
 
 // Login page
 app.get("/login", (req, res) => {
   const currentUser = req.cookies.user_id;
-  const templateVars = { username: req.cookies["username"],
-  user: users[currentUser] };
+  const templateVars = { user: users[currentUser] };
   res.render("login", templateVars);
 });
 
