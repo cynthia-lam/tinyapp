@@ -9,12 +9,16 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
-// middleware
+ /******************************************************************** 
+  middleware
+**********************************************************************/
 app.use(express.urlencoded({ extended: true })); // allows you to read body
 app.use(cookieParser());
 
 
-// database objects
+ /******************************************************************** 
+  database objects
+**********************************************************************/
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
@@ -33,7 +37,9 @@ const users = {
   },
 };
 
-// functions
+ /******************************************************************** 
+  functions
+**********************************************************************/
 // create a random string to be shortURL
 function generateRandomString() {
   let result = "";
@@ -47,6 +53,7 @@ function generateRandomString() {
   return result;
 };
 
+// input email output user object with id, email, password. Or undefined if !email
 const getUserByEmail = function(emailToCheck){
   for (const user in users) {
     if (users[user].email === emailToCheck){
@@ -55,15 +62,29 @@ const getUserByEmail = function(emailToCheck){
   }
 };
 
+
+ /******************************************************************** 
+POST
+**********************************************************************/
 // Handle /login
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
-  for (const user of users) {
-    if (user.email === email && user.password === password) {
+  if (!email || !password) {
+    return res.status(400).send("Email and password are required");
+  }
+
+  for (const user in users) {
+    if (users[user].email === email && users[user].password === password) { // if the email and password match
+      console.log("email and pw match");
       res.cookie("user_id", user.id);
       res.redirect("/urls");
+    } else if (users[user].email === email) { // if email is in obj but password is not
+      console.log(`user.email: ${users[user].email}, email: ${email}`);
+      return res.status(403).send("Incorrect password");
+    } else {
+      return res.status(403).send("Account with email does not exist");
     }
   }
 
@@ -128,6 +149,10 @@ app.post("/urls/:id", (req, res) => {
   res.redirect("/urls");
 });
 
+
+ /******************************************************************** 
+GET
+**********************************************************************/
 // Home page just says hello
 app.get("/", (req, res) => {
   res.send("Hello!");
