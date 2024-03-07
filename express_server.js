@@ -248,6 +248,12 @@ app.get("/urls/new", (req, res) => {
 // Show page
 app.get("/urls/:id", (req, res) => {
   const currentUser = req.cookies.user_id;
+
+  // if user is not logged in, send HTML error
+  if (!currentUser) {
+    return res.send("<html><body>Please log in to view this page</body></html>\n");
+  }
+
   const templateVars = {
     id: req.params.id,
     longURL: urlDatabase[req.params.id].longURL,
@@ -283,8 +289,6 @@ app.get("/login", (req, res) => {
 // Redirect u/shortURL to the longURL
 app.get("/u/:id", (req, res) => {
   const shortURL = req.params.id;
-  console.log(Object.keys(urlDatabase));
-  console.log(Object.keys(urlDatabase).includes(shortURL));
   if (!Object.keys(urlDatabase).includes(shortURL)) {
     return res.send("<html><body>This shortened URL does not exist!</body></html>\n");
   }
