@@ -20,8 +20,14 @@ app.use(cookieParser());
  database objects
 **********************************************************************/
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b2xVn2: {
+    longURL: "http://www.lighthouselabs.ca",
+    userID: "aJ48lW",
+  },
+  sm5xK8: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW",
+  },
 };
 
 const users = {
@@ -140,10 +146,16 @@ app.post("/urls", (req, res) => {
 
   console.log(req.body); // Log the POST request body to the console
 
-  // only allow url to be added if logged in
+  // only allow url to be added if logged in - add shortURL, longURL, user_id to urlDatabase
   if (currentUser) {
+    console.log("You are logged in, can proceed");
     const shortURL = generateRandomString();
-    urlDatabase[shortURL] = req.body.longURL;
+    console.log(shortURL);
+    urlDatabase[shortURL] = {
+      longURL: req.body.longURL,
+      userID: currentUser
+    };
+
     return res.redirect(`/urls/${shortURL}`);
   }
 });
@@ -158,7 +170,7 @@ app.post("/urls/:id/delete", (req, res) => {
 // Form on show URL page to edit a long URL
 app.post("/urls/:id", (req, res) => {
   const id = req.params.id;
-  urlDatabase[id] = req.body.longURLedit;
+  urlDatabase[id].longURL = req.body.longURLedit;
   return res.redirect("/urls");
 });
 
@@ -223,7 +235,7 @@ app.get("/urls/:id", (req, res) => {
   const currentUser = req.cookies.user_id;
   const templateVars = {
     id: req.params.id,
-    longURL: urlDatabase[req.params.id],
+    longURL: urlDatabase[req.params.id].longURL,
     user: users[currentUser]
   };
   return res.render("urls_show", templateVars);
@@ -258,9 +270,9 @@ app.get("/u/:id", (req, res) => {
   const shortURL = req.params.id;
   console.log(Object.keys(urlDatabase));
   console.log(Object.keys(urlDatabase).includes(shortURL));
-  if (!Object.keys(urlDatabase).includes(shortURL)){
+  if (!Object.keys(urlDatabase).includes(shortURL)) {
     return res.send("<html><body>This shortened URL does not exist!</body></html>\n");
   }
-  const longURL = urlDatabase[shortURL]
-  return res.redirect(longURL);
+  const redirectToUrl = urlDatabase[shortURL].longURL;
+  return res.redirect(redirectToUrl);
 });
