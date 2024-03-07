@@ -27,7 +27,7 @@ const urlDatabase = {
   sm5xK8: {
     longURL: "https://www.google.ca",
     userID: "aJ48lW",
-  },
+  }
 };
 
 const users = {
@@ -68,6 +68,18 @@ const getUserByEmail = function(emailToCheck) {
   }
 };
 
+// returns the URLs where the userID is equal to the id of the currently logged-in user
+// I: userID 
+// O: object filtered by userID
+const urlsForUser = function(id) {
+  let thisUsersURLs = {};
+  for (const url in urlDatabase) {
+    if (urlDatabase[url].userID === id) {
+      thisUsersURLs[url] = urlDatabase[url];
+    }
+  }
+  return thisUsersURLs;
+};
 
 /******************************************************************** 
 POST
