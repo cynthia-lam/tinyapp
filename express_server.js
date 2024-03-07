@@ -104,10 +104,6 @@ app.post("/logout", (req, res) => {
 
 // Register
 app.post("/register", (req, res) => {
-  // generate random user_id, save to cookie
-  const user_id = generateRandomString();
-  res.cookie("user_id", user_id);
-
   const email = req.body.email;
   const password = req.body.password;
 
@@ -123,7 +119,9 @@ app.post("/register", (req, res) => {
   }
 
   // if error free, add to global users object
-  console.log("Users before: ", users);
+  // generate random user_id, save to cookie
+  const user_id = generateRandomString();
+  res.cookie("user_id", user_id);
   users[user_id] = {
     id: user_id,
     email: email,
