@@ -127,15 +127,25 @@ app.post("/register", (req, res) => {
     email: email,
     password: password
   };
-  res.redirect("/urls");
+  return res.redirect("/urls");
 });
 
 // Using HTML form to add newly generated short url and user inputted long url into database
 app.post("/urls", (req, res) => {
+  // if user is not logged in, respond with an HTML message 
+  const currentUser = req.cookies.user_id;
+  if (!currentUser) {
+    return res.send("<html><body>Please log in to create shortened URLs</body></html>\n");
+  }
+
   console.log(req.body); // Log the POST request body to the console
-  const shortURL = generateRandomString();
-  urlDatabase[shortURL] = req.body.longURL;
-  res.redirect(`/urls/${shortURL}`);
+
+  // only allow url to be added if logged in
+  if (currentUser) {
+    const shortURL = generateRandomString();
+    urlDatabase[shortURL] = req.body.longURL;
+    return res.redirect(`/urls/${shortURL}`);
+  }
 });
 
 // Form on My URLs page to delete a url
@@ -188,7 +198,6 @@ Apply ejs template files
 // Main page
 app.get("/urls", (req, res) => {
   const currentUser = req.cookies.user_id;
-  // console.log("this is user_id: ", req.cookies["user_id"]);
   const templateVars = {
     urls: urlDatabase,
     user: users[currentUser]
@@ -199,8 +208,14 @@ app.get("/urls", (req, res) => {
 // New URL page
 app.get("/urls/new", (req, res) => {
   const currentUser = req.cookies.user_id;
+
+  // if user is not logged in, redirect to /login
+  if (!currentUser) {
+    return res.redirect("/login");
+  }
+
   const templateVars = { user: users[currentUser] };
-  res.render("urls_new", templateVars);
+  return res.render("urls_new", templateVars);
 });
 
 // Show page
@@ -217,6 +232,8 @@ app.get("/urls/:id", (req, res) => {
 // Register page
 app.get("/register", (req, res) => {
   const currentUser = req.cookies.user_id;
+
+  // if user is logged in, redirect to /urls
   if (currentUser) {
     res.redirect("/urls");
   }
@@ -227,6 +244,8 @@ app.get("/register", (req, res) => {
 // Login page
 app.get("/login", (req, res) => {
   const currentUser = req.cookies.user_id;
+
+  // if user is logged in, redirect to /urls
   if (currentUser) {
     res.redirect("/urls");
   }
