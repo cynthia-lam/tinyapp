@@ -9,15 +9,15 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
- /******************************************************************** 
-  middleware
+/******************************************************************** 
+ middleware
 **********************************************************************/
 app.use(express.urlencoded({ extended: true })); // allows you to read body
 app.use(cookieParser());
 
 
- /******************************************************************** 
-  database objects
+/******************************************************************** 
+ database objects
 **********************************************************************/
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -37,8 +37,8 @@ const users = {
   },
 };
 
- /******************************************************************** 
-  functions
+/******************************************************************** 
+ functions
 **********************************************************************/
 // create a random string to be shortURL
 function generateRandomString() {
@@ -48,26 +48,27 @@ function generateRandomString() {
   let counter = 0;
   while (counter < lengthOfRandomString) {
     result += letters.charAt(Math.floor(Math.random() * letters.length));
-    counter ++;
+    counter++;
   }
   return result;
 };
 
 // input email output user object with id, email, password. Or undefined if !email
-const getUserByEmail = function(emailToCheck){
+const getUserByEmail = function(emailToCheck) {
   for (const user in users) {
-    if (users[user].email === emailToCheck){
+    if (users[user].email === emailToCheck) {
       return users[user];
     }
   }
 };
 
 
- /******************************************************************** 
+/******************************************************************** 
 POST
 **********************************************************************/
 // Handle /login
 app.post("/login", (req, res) => {
+  console.log(users);
   const email = req.body.email;
   const password = req.body.password;
 
@@ -75,24 +76,31 @@ app.post("/login", (req, res) => {
     return res.status(400).send("Email and password are required");
   }
 
+  let emailFound = false;
+
   for (const user in users) {
-    if (users[user].email === email && users[user].password === password) { // if the email and password match
-      console.log("email and pw match");
-      res.cookie("user_id", users[user].id);
-      console.log(req.cookies.user_id);
-      res.redirect("/urls");
-    } else if (users[user].email === email) { // if email is in obj but password is not
-      console.log(`user.email: ${users[user].email}, email: ${email}`);
-      return res.status(403).send("Incorrect password");
-    } else {
-      return res.status(403).send("Account with email does not exist");
+    if (users[user].email === email) {
+      emailFound = true; // Set the flag to true if email is found
+      if (users[user].password === password) { // if the email and password match
+        console.log("email and pw match");
+        // console.log("users[user].id: ", users[user].id);
+        // console.log(users);
+        // console.log(user);
+        res.cookie("user_id", users[user].id);
+        return res.redirect("/urls");
+      } else { // if email is in obj but password does not match
+        return res.status(403).send("Incorrect password");
+      }
     }
+  }
+  if (!emailFound) {
+    return res.status(403).send("Account with email does not exist");
   }
 });
 
 // Handle /logout
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id"); 
+  res.clearCookie("user_id");
   res.redirect("/login");
 });
 
@@ -100,7 +108,7 @@ app.post("/logout", (req, res) => {
 app.post("/register", (req, res) => {
   // generate random user_id, save to cookie
   const user_id = generateRandomString();
-  res.cookie("user_id", user_id); 
+  res.cookie("user_id", user_id);
 
   const email = req.body.email;
   const password = req.body.password;
@@ -113,13 +121,18 @@ app.post("/register", (req, res) => {
 
   // if email already exists
   if (getUserByEmail(email)) {
-    return res.status(400).send("Account already exists");
+    return res.status(400).send("Account already exists, please log in");
   }
-  
+
   // if error free, add to global users object
-  users[user_id] = {user_id: user_id, 
-               email: email,
-              password: password};
+  console.log("Users before: ", users);
+  users[user_id] = {
+    id: user_id,
+    email: email,
+    password: password
+  };
+  console.log("users after: ", users); // ////////////////////////////////////////////////////////checking added 
+  console.log("User_id: ", user_id);
   res.redirect("/urls");
 });
 
@@ -146,7 +159,7 @@ app.post("/urls/:id", (req, res) => {
 });
 
 
- /******************************************************************** 
+/******************************************************************** 
 GET
 **********************************************************************/
 // Home page just says hello
@@ -168,22 +181,25 @@ app.get("/hello", (req, res) => {
 app.get("/set", (req, res) => {
   const a = 1;
   res.send(`a = ${a}`);
- });
- 
- app.get("/fetch", (req, res) => {
+});
+
+app.get("/fetch", (req, res) => {
   res.send(`a = ${a}`);
- });
+});
 
 
- /******************************************************************** 
- Apply ejs template files
+/******************************************************************** 
+Apply ejs template files
 **********************************************************************/
- // Main page
- app.get("/urls", (req, res) => {
+// Main page
+app.get("/urls", (req, res) => {
   const currentUser = req.cookies.user_id;
   // console.log("this is user_id: ", req.cookies["user_id"]);
-  const templateVars = { urls: urlDatabase,
-                        user: users[currentUser]};
+  const templateVars = {
+    urls: urlDatabase,
+    user: users[currentUser]
+  };
+  // console.log("templateVars: ", templateVars);
   res.render("urls_index", templateVars);
 });
 
@@ -197,9 +213,11 @@ app.get("/urls/new", (req, res) => {
 // Show page
 app.get("/urls/:id", (req, res) => {
   const currentUser = req.cookies.user_id;
-  const templateVars = { id: req.params.id,
-                        longURL: urlDatabase[req.params.id],
-                        user: users[currentUser] };
+  const templateVars = {
+    id: req.params.id,
+    longURL: urlDatabase[req.params.id],
+    user: users[currentUser]
+  };
   res.render("urls_show", templateVars);
 });
 
