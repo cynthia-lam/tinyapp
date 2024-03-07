@@ -210,6 +210,9 @@ Apply ejs template files
 // Main page
 app.get("/urls", (req, res) => {
   const currentUser = req.cookies.user_id;
+  if (!currentUser){
+    return res.send("<html><body>Please log in to view your URLs</body></html>\n");
+  }
   const templateVars = {
     urls: urlDatabase,
     user: users[currentUser]
