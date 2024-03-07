@@ -217,6 +217,9 @@ app.get("/urls/:id", (req, res) => {
 // Register page
 app.get("/register", (req, res) => {
   const currentUser = req.cookies.user_id;
+  if (currentUser) {
+    res.redirect("/urls");
+  }
   const templateVars = { user: users[currentUser] };
   res.render("register", templateVars);
 });
@@ -224,6 +227,9 @@ app.get("/register", (req, res) => {
 // Login page
 app.get("/login", (req, res) => {
   const currentUser = req.cookies.user_id;
+  if (currentUser) {
+    res.redirect("/urls");
+  }
   const templateVars = { user: users[currentUser] };
   res.render("login", templateVars);
 });
