@@ -22,7 +22,7 @@ app.use(cookieParser());
 const urlDatabase = {
   b2xVn2: {
     longURL: "http://www.lighthouselabs.ca",
-    userID: "aJ48lW",
+    userID: "userRandomID",
   },
   sm5xK8: {
     longURL: "https://www.google.ca",
@@ -254,9 +254,17 @@ app.get("/urls/:id", (req, res) => {
     return res.send("<html><body>Please log in to view this page</body></html>\n");
   }
 
+  const currentUserURLs = urlsForUser(currentUser);
+  const shortURL = req.params.id
+
+  // if user is not the owner of this URL
+  if (!Object.keys(currentUserURLs).includes(shortURL)){
+    return res.send("<html><body>You do not have permission to view this URL</body></html>");
+  }
+
   const templateVars = {
     id: req.params.id,
-    longURL: urlDatabase[req.params.id].longURL,
+    longURL: urlDatabase[shortURL].longURL,
     user: users[currentUser]
   };
   return res.render("urls_show", templateVars);
