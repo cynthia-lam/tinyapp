@@ -99,7 +99,7 @@ app.post("/login", (req, res) => {
 // Handle /logout
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
-  res.redirect("/login");
+  return res.redirect("/login");
 });
 
 // Register
@@ -152,14 +152,14 @@ app.post("/urls", (req, res) => {
 app.post("/urls/:id/delete", (req, res) => {
   const id = req.params.id;
   delete urlDatabase[id];
-  res.redirect("/urls");
+  return res.redirect("/urls");
 });
 
 // Form on show URL page to edit a long URL
 app.post("/urls/:id", (req, res) => {
   const id = req.params.id;
   urlDatabase[id] = req.body.longURLedit;
-  res.redirect("/urls");
+  return res.redirect("/urls");
 });
 
 
@@ -202,7 +202,7 @@ app.get("/urls", (req, res) => {
     urls: urlDatabase,
     user: users[currentUser]
   };
-  res.render("urls_index", templateVars);
+  return res.render("urls_index", templateVars);
 });
 
 // New URL page
@@ -226,7 +226,7 @@ app.get("/urls/:id", (req, res) => {
     longURL: urlDatabase[req.params.id],
     user: users[currentUser]
   };
-  res.render("urls_show", templateVars);
+  return res.render("urls_show", templateVars);
 });
 
 // Register page
@@ -235,10 +235,10 @@ app.get("/register", (req, res) => {
 
   // if user is logged in, redirect to /urls
   if (currentUser) {
-    res.redirect("/urls");
+    return res.redirect("/urls");
   }
   const templateVars = { user: users[currentUser] };
-  res.render("register", templateVars);
+  return res.render("register", templateVars);
 });
 
 // Login page
@@ -247,14 +247,14 @@ app.get("/login", (req, res) => {
 
   // if user is logged in, redirect to /urls
   if (currentUser) {
-    res.redirect("/urls");
+    return res.redirect("/urls");
   }
   const templateVars = { user: users[currentUser] };
-  res.render("login", templateVars);
+  return res.render("login", templateVars);
 });
 
 // Redirect u/shortURL to the longURL
 app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id]
-  res.redirect(longURL);
+  return res.redirect(longURL);
 });
