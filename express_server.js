@@ -72,20 +72,18 @@ app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
+  //ERROR HANDLING:
   if (!email || !password) {
     return res.status(400).send("Email and password are required");
   }
 
+  // create flag for whether the email is in the users object
   let emailFound = false;
 
   for (const user in users) {
     if (users[user].email === email) {
       emailFound = true; // Set the flag to true if email is found
       if (users[user].password === password) { // if the email and password match
-        console.log("email and pw match");
-        // console.log("users[user].id: ", users[user].id);
-        // console.log(users);
-        // console.log(user);
         res.cookie("user_id", users[user].id);
         return res.redirect("/urls");
       } else { // if email is in obj but password does not match
@@ -131,8 +129,6 @@ app.post("/register", (req, res) => {
     email: email,
     password: password
   };
-  console.log("users after: ", users); // ////////////////////////////////////////////////////////checking added 
-  console.log("User_id: ", user_id);
   res.redirect("/urls");
 });
 
@@ -199,7 +195,6 @@ app.get("/urls", (req, res) => {
     urls: urlDatabase,
     user: users[currentUser]
   };
-  // console.log("templateVars: ", templateVars);
   res.render("urls_index", templateVars);
 });
 
