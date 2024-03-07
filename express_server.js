@@ -255,6 +255,12 @@ app.get("/login", (req, res) => {
 
 // Redirect u/shortURL to the longURL
 app.get("/u/:id", (req, res) => {
-  const longURL = urlDatabase[req.params.id]
+  const shortURL = req.params.id;
+  console.log(Object.keys(urlDatabase));
+  console.log(Object.keys(urlDatabase).includes(shortURL));
+  if (!Object.keys(urlDatabase).includes(shortURL)){
+    return res.send("<html><body>This shortened URL does not exist!</body></html>\n");
+  }
+  const longURL = urlDatabase[shortURL]
   return res.redirect(longURL);
 });
