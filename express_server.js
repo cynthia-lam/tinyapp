@@ -5,7 +5,16 @@ const PORT = 8080; // default port 8080
 
 app.set("view engine", "ejs");
 
-// creating our database objects
+app.listen(PORT, () => {
+  console.log(`Example app listening on port ${PORT}!`);
+});
+
+// middleware
+app.use(express.urlencoded({ extended: true })); // allows you to read body
+app.use(cookieParser());
+
+
+// database objects
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
@@ -24,14 +33,7 @@ const users = {
   },
 };
 
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
-});
-
-// middleware
-app.use(express.urlencoded({ extended: true })); // allows you to read body
-app.use(cookieParser());
-
+// functions
 // create a random string to be shortURL
 function generateRandomString() {
   let result = "";
@@ -45,11 +47,30 @@ function generateRandomString() {
   return result;
 };
 
+const getUserByEmail = function(emailToCheck){
+  for (const user in users) {
+    if (users[user].email === emailToCheck){
+      return users[user];
+    }
+  }
+};
+
 // Handle /login
 app.post("/login", (req, res) => {
-  const enteredUsername = req.body.username;
-  res.cookie("username", enteredUsername); 
-  res.redirect("/urls");
+  const email = req.body.email;
+  const password = req.body.password;
+
+  for (const user of users) {
+    if (user.email === email && user.password === password) {
+      res.cookie("user_id", user.id);
+      res.redirect("/urls");
+    }
+  }
+
+  // old code below
+  // const enteredUsername = req.body.username;
+  // res.cookie("username", enteredUsername); 
+  // res.redirect("/urls");
 });
 
 // Handle /logout
@@ -68,14 +89,6 @@ app.post("/register", (req, res) => {
   const password = req.body.password;
 
   //ERROR HANDLING:
-  const getUserByEmail = function(emailToCheck){
-    for (const user in users) {
-      if (users[user].email === emailToCheck){
-        return users[user];
-      }
-    }
-  };
-
   // if email or password are empty
   if (!email || !password) {
     return res.status(400).send("Email and password are required");
