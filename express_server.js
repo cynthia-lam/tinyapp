@@ -67,6 +67,7 @@ const getUserByEmail = function(emailToCheck) {
       return users[user];
     }
   }
+  return;
 };
 
 // returns the URLs where the userID is equal to the id of the currently logged-in user
@@ -134,7 +135,7 @@ app.post("/register", (req, res) => {
 
   // if email already exists
   if (getUserByEmail(email)) {
-    return res.status(400).send("Account already exists, please log in");
+    return res.status(403).send("Account already exists, please log in");
   }
 
   // if error free, add to global users object
