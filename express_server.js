@@ -104,17 +104,10 @@ app.post("/login", (req, res) => {
 
   for (const user in users) {
     if (users[user].email === email) {
-      console.log("found email");
-      console.log("pw: ", password);
-      console.log("password from obj: ", users[user].password);
       emailFound = true; // Set the flag to true if email is found
-      console.log(bcrypt.compareSync(password, users[user].password));
       if (bcrypt.compareSync(password, users[user].password)) { // if the email and password match
         // set cookie to user_id
-        console.log("pw correct");
-        console.log("Current user id: ", users[user].id);
         req.session.user_id = users[user].id;
-        console.log("Cookie value: ", req.session.user_id);
         return res.redirect("/urls");
       } else { // if email is in obj but password does not match
         return res.status(403).send("Incorrect password");
