@@ -1,5 +1,6 @@
 const express = require("express");
 const cookieSession = require('cookie-session');
+const { getUserByEmail } = require('./helpers');
 const bcrypt = require("bcryptjs");
 const app = express();
 const PORT = 8080; // default port 8080
@@ -63,15 +64,7 @@ function generateRandomString() {
   return result;
 };
 
-// input email output user object with id, email, password. Or undefined if !email
-const getUserByEmail = function(email, database) {
-  for (const user in users) {
-    if (users[user].email === email) {
-      return users[user];
-    }
-  }
-  return;
-};
+
 
 // returns the URLs where the userID is equal to the id of the currently logged-in user
 // I: userID 
