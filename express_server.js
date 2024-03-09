@@ -1,5 +1,5 @@
 const express = require("express");
-const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
 const bcrypt = require("bcryptjs");
 const app = express();
 const PORT = 8080; // default port 8080
@@ -14,7 +14,10 @@ app.listen(PORT, () => {
  middleware
 **********************************************************************/
 app.use(express.urlencoded({ extended: true })); // allows you to read body
-app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  secret: "yeehawI'mnotSureWoohoo!",
+}))
 
 
 /******************************************************************** 
@@ -35,12 +38,12 @@ const users = {
   userRandomID: {
     id: "userRandomID",
     email: "user@example.com",
-    password: "purple-monkey-dinosaur",
+    password: bcrypt.hashSync("purple-monkey-dinosaur", 10)
   },
   user2RandomID: {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: "dishwasher-funk",
+    password: bcrypt.hashSync("dishwasher-funk", 10)
   },
 };
 
@@ -101,9 +104,17 @@ app.post("/login", (req, res) => {
 
   for (const user in users) {
     if (users[user].email === email) {
+      console.log("found email");
+      console.log("pw: ", password);
+      console.log("password from obj: ", users[user].password);
       emailFound = true; // Set the flag to true if email is found
+      console.log(bcrypt.compareSync(password, users[user].password));
       if (bcrypt.compareSync(password, users[user].password)) { // if the email and password match
-        res.cookie("user_id", users[user].id);
+        // set cookie to user_id
+        console.log("pw correct");
+        console.log("Current user id: ", users[user].id);
+        req.session.user_id = users[user].id;
+        console.log("Cookie value: ", req.session.user_id);
         return res.redirect("/urls");
       } else { // if email is in obj but password does not match
         return res.status(403).send("Incorrect password");
@@ -117,7 +128,7 @@ app.post("/login", (req, res) => {
 
 // Handle /logout
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
+  req.session = null;
   return res.redirect("/login");
 });
 
@@ -141,7 +152,8 @@ app.post("/register", (req, res) => {
   // if error free, add to global users object
   // generate random user_id, save to cookie
   const user_id = generateRandomString();
-  res.cookie("user_id", user_id);
+  // set cookie to user_id
+  req.session.user_id = user_id;
   users[user_id] = {
     id: user_id,
     email: email,
@@ -153,7 +165,7 @@ app.post("/register", (req, res) => {
 // Using HTML form to add newly generated short url and user inputted long url into database
 app.post("/urls", (req, res) => {
   // if user is not logged in, respond with an HTML message 
-  const currentUser = req.cookies.user_id;
+  const currentUser = req.session.user_id;
   if (!currentUser) {
     return res.send("<html><body>Please log in to create shortened URLs</body></html>\n");
   }
@@ -174,7 +186,7 @@ app.post("/urls", (req, res) => {
 // Form on My URLs page to delete a url
 app.post("/urls/:id/delete", (req, res) => {
   const shortURL = req.params.id;
-  const currentUser = req.cookies.user_id;
+  const currentUser = req.session.user_id;
   const currentUserURLs = urlsForUser(currentUser);
 
   // if id does not exist 
@@ -199,7 +211,7 @@ app.post("/urls/:id/delete", (req, res) => {
 // Form on show URL page to edit a long URL
 app.post("/urls/:id", (req, res) => {
   const shortURL = req.params.id;
-  const currentUser = req.cookies.user_id;
+  const currentUser = req.session.user_id;
   const currentUserURLs = urlsForUser(currentUser);
 
   // if id does not exist 
@@ -256,7 +268,7 @@ Apply ejs template files
 **********************************************************************/
 // Main page
 app.get("/urls", (req, res) => {
-  const currentUser = req.cookies.user_id;
+  const currentUser = req.session.user_id;
   if (!currentUser){
     return res.send("<html><body>Please log in to view your URLs</body></html>\n");
   }
@@ -271,7 +283,7 @@ app.get("/urls", (req, res) => {
 
 // New URL page
 app.get("/urls/new", (req, res) => {
-  const currentUser = req.cookies.user_id;
+  const currentUser = req.session.user_id;
 
   // if user is not logged in, redirect to /login
   if (!currentUser) {
@@ -284,7 +296,7 @@ app.get("/urls/new", (req, res) => {
 
 // Show page
 app.get("/urls/:id", (req, res) => {
-  const currentUser = req.cookies.user_id;
+  const currentUser = req.session.user_id;
   const currentUserURLs = urlsForUser(currentUser);
   const shortURL = req.params.id
 
@@ -313,7 +325,7 @@ app.get("/urls/:id", (req, res) => {
 
 // Register page
 app.get("/register", (req, res) => {
-  const currentUser = req.cookies.user_id;
+  const currentUser = req.session.user_id;
 
   // if user is logged in, redirect to /urls
   if (currentUser) {
@@ -325,7 +337,7 @@ app.get("/register", (req, res) => {
 
 // Login page
 app.get("/login", (req, res) => {
-  const currentUser = req.cookies.user_id;
+  const currentUser = req.session.user_id;
 
   // if user is logged in, redirect to /urls
   if (currentUser) {
@@ -344,6 +356,3 @@ app.get("/u/:id", (req, res) => {
   const redirectToUrl = urlDatabase[shortURL].longURL;
   return res.redirect(redirectToUrl);
 });
-
-// where i am as of march 8:
-// need to figure out why longurl is not showing in table
