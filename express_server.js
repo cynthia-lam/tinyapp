@@ -167,22 +167,59 @@ app.post("/urls", (req, res) => {
       longURL: req.body.longURL,
       userID: currentUser
     };
-
+    console.log(req.body.longURL);
+    console.log(urlDatabase);
     return res.redirect(`/urls/${shortURL}`);
   }
 });
 
 // Form on My URLs page to delete a url
 app.post("/urls/:id/delete", (req, res) => {
-  const id = req.params.id;
-  delete urlDatabase[id];
+  const shortURL = req.params.id;
+  const currentUser = req.cookies.user_id;
+  const currentUserURLs = urlsForUser(currentUser);
+
+  // if id does not exist 
+  if (!Object.keys(urlDatabase).includes(shortURL)) {
+    return res.send("<html><body>Cannot delete a shortened URL that does not exist!</body></html>\n");
+  }
+
+  // if user is not logged in, send HTML error
+  if (!currentUser) {
+    return res.send("<html><body>Please log in to delete this URL</body></html>\n");
+  }
+
+  // if user is not the owner of this URL
+  if (!Object.keys(currentUserURLs).includes(shortURL)){
+    return res.send("<html><body>You do not have permission to delete this URL</body></html>");
+  }
+
+  delete urlDatabase[shortURL];
   return res.redirect("/urls");
 });
 
 // Form on show URL page to edit a long URL
 app.post("/urls/:id", (req, res) => {
-  const id = req.params.id;
-  urlDatabase[id].longURL = req.body.longURLedit;
+  const shortURL = req.params.id;
+  const currentUser = req.cookies.user_id;
+  const currentUserURLs = urlsForUser(currentUser);
+
+  // if id does not exist 
+  if (!Object.keys(urlDatabase).includes(shortURL)) {
+    return res.send("<html><body>Cannot edit a shortened URL that does not exist!</body></html>\n");
+  }
+
+  // if user is not logged in, send HTML error
+  if (!currentUser) {
+    return res.send("<html><body>Please log in to edit this URL</body></html>\n");
+  }
+
+  // if user is not the owner of this URL
+  if (!Object.keys(currentUserURLs).includes(shortURL)){
+    return res.send("<html><body>You do not have permission to edit this URL</body></html>");
+  }  
+  
+  urlDatabase[shortURL].longURL = req.body.longURLedit;
   return res.redirect("/urls");
 });
 
@@ -250,14 +287,18 @@ app.get("/urls/new", (req, res) => {
 // Show page
 app.get("/urls/:id", (req, res) => {
   const currentUser = req.cookies.user_id;
+  const currentUserURLs = urlsForUser(currentUser);
+  const shortURL = req.params.id
 
-  // if user is not logged in, send HTML error
+  // if user is not logged in
   if (!currentUser) {
     return res.send("<html><body>Please log in to view this page</body></html>\n");
   }
 
-  const currentUserURLs = urlsForUser(currentUser);
-  const shortURL = req.params.id
+  // if id does not exist
+   if (!Object.keys(urlDatabase).includes(shortURL)){
+    return res.send("<html><body>This URL does not exist</body></html>");
+  }
 
   // if user is not the owner of this URL
   if (!Object.keys(currentUserURLs).includes(shortURL)){
@@ -305,3 +346,6 @@ app.get("/u/:id", (req, res) => {
   const redirectToUrl = urlDatabase[shortURL].longURL;
   return res.redirect(redirectToUrl);
 });
+
+// where i am as of march 8:
+// need to figure out why longurl is not showing in table
