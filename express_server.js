@@ -16,7 +16,7 @@ app.listen(PORT, () => {
 app.use(express.urlencoded({ extended: true })); // allows you to read body
 app.use(cookieSession({
   name: 'session',
-  secret: "yeehawI'mnotSureWoohoo!",
+  keys: ['key1', 'key2']
 }))
 
 
