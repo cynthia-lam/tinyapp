@@ -18,7 +18,7 @@ app.use(express.urlencoded({extended:false}));
 app.use(express.json());
 app.use(cookieSession({
   name: 'session',
-  keys: ['key1', 'key2']
+  keys: ['oh i didn\'t know we could go crazy here', 'yeehaw123!@#']
 }))
 
 
@@ -189,12 +189,12 @@ app.post("/urls/:id", (req, res) => {
 
   // if id does not exist 
   if (!Object.keys(urlDatabase).includes(shortURL)) {
-    return res.send("<html><body>Cannot edit a shortened URL that does not exist!</body></html>\n");
+    return res.status(404).send("<html><body>Cannot edit a shortened URL that does not exist!</body></html>\n");
   }
 
   // if user is not logged in, send HTML error
   if (!currentUser) {
-    return res.send("<html><body>Please log in to edit this URL</body></html>\n");
+    return res.status(403).send("<html><body>Please log in to edit this URL</body></html>\n");
   }
 
   // if user is not the owner of this URL
