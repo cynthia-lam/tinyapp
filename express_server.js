@@ -1,6 +1,6 @@
 const express = require("express");
 const cookieSession = require('cookie-session');
-const { getUserByEmail } = require('./helpers');
+const { getUserByEmail, generateRandomString } = require('./helpers');
 const bcrypt = require("bcryptjs");
 const app = express();
 const PORT = 8080; // default port 8080
@@ -51,20 +51,6 @@ const users = {
 /******************************************************************** 
  functions
 **********************************************************************/
-// create a random string to be shortURL
-function generateRandomString() {
-  let result = "";
-  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-  const lengthOfRandomString = 6;
-  let counter = 0;
-  while (counter < lengthOfRandomString) {
-    result += letters.charAt(Math.floor(Math.random() * letters.length));
-    counter++;
-  }
-  return result;
-};
-
-
 
 // returns the URLs where the userID is equal to the id of the currently logged-in user
 // I: userID 
