@@ -14,7 +14,8 @@ app.listen(PORT, () => {
 /******************************************************************** 
  middleware
 **********************************************************************/
-app.use(express.urlencoded({ extended: true })); // allows you to read body
+app.use(express.urlencoded({extended:false}));
+app.use(express.json());
 app.use(cookieSession({
   name: 'session',
   keys: ['key1', 'key2']
@@ -211,7 +212,7 @@ GET
 **********************************************************************/
 // Home page just says hello
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  return res.redirect('/login');
 });
 
 // Page to see json obj for urlDatabase
