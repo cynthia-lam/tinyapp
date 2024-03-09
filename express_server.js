@@ -89,7 +89,8 @@ POST
 app.post("/login", (req, res) => {
   console.log(users);
   const email = req.body.email;
-  const password = req.body.password;///////////////////////////////////////////
+  const password = req.body.password;
+  const hashedPassword = bcrypt.hashSync(password, 10);
 
   //ERROR HANDLING:
   if (!email || !password) {
@@ -102,7 +103,7 @@ app.post("/login", (req, res) => {
   for (const user in users) {
     if (users[user].email === email) {
       emailFound = true; // Set the flag to true if email is found
-      if (users[user].password === password) { // if the email and password match
+      if (bcrypt.compareSync(password, users[user].password)) { // if the email and password match
         res.cookie("user_id", users[user].id);
         return res.redirect("/urls");
       } else { // if email is in obj but password does not match
