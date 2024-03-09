@@ -64,9 +64,9 @@ function generateRandomString() {
 };
 
 // input email output user object with id, email, password. Or undefined if !email
-const getUserByEmail = function(emailToCheck) {
+const getUserByEmail = function(email, database) {
   for (const user in users) {
-    if (users[user].email === emailToCheck) {
+    if (users[user].email === email) {
       return users[user];
     }
   }
@@ -145,7 +145,7 @@ app.post("/register", (req, res) => {
   }
 
   // if email already exists
-  if (getUserByEmail(email)) {
+  if (getUserByEmail(email, users)) {
     return res.status(403).send("Account already exists, please log in");
   }
 
