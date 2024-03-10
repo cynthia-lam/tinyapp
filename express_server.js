@@ -140,7 +140,7 @@ app.post("/urls", (req, res) => {
   // if user is not logged in, respond with an HTML message 
   const currentUser = req.session.user_id;
   if (!currentUser) {
-    return res.send("<html><body>Please log in to create shortened URLs</body></html>\n");
+    return res.status(403).send("<html><body>Please log in to create shortened URLs</body></html>\n");
   }
 
   console.log(req.body); // Log the POST request body to the console
@@ -164,12 +164,12 @@ app.post("/urls/:id/delete", (req, res) => {
 
   // if id does not exist 
   if (!Object.keys(urlDatabase).includes(shortURL)) {
-    return res.send("<html><body>Cannot delete a shortened URL that does not exist!</body></html>\n");
+    return res.status(404).send("<html><body>Cannot delete a shortened URL that does not exist!</body></html>\n");
   }
 
   // if user is not logged in, send HTML error
   if (!currentUser) {
-    return res.send("<html><body>Please log in to delete this URL</body></html>\n");
+    return res.status(403).send("<html><body>Please log in to delete this URL</body></html>\n");
   }
 
   // if user is not the owner of this URL
@@ -199,7 +199,7 @@ app.post("/urls/:id", (req, res) => {
 
   // if user is not the owner of this URL
   if (!Object.keys(currentUserURLs).includes(shortURL)){
-    return res.send("<html><body>You do not have permission to edit this URL</body></html>");
+    return res.status(403).send("<html><body>You do not have permission to edit this URL</body></html>");
   }  
   
   urlDatabase[shortURL].longURL = req.body.longURLedit;
@@ -273,14 +273,14 @@ app.get("/urls/:id", (req, res) => {
   const currentUserURLs = urlsForUser(currentUser);
   const shortURL = req.params.id
 
-  // if user is not logged in
-  if (!currentUser) {
-    return res.send("<html><body>Please log in to view this page</body></html>\n");
+  // if id does not exist
+  if (!Object.keys(urlDatabase).includes(shortURL)){
+    return res.status(404).send("<html><body>This URL does not exist</body></html>");
   }
 
-  // if id does not exist
-   if (!Object.keys(urlDatabase).includes(shortURL)){
-    return res.send("<html><body>This URL does not exist</body></html>");
+  // if user is not logged in
+  if (!currentUser) {
+    return res.status(403).send("<html><body>Please log in to view this page</body></html>\n");
   }
 
   // if user is not the owner of this URL
@@ -324,7 +324,7 @@ app.get("/login", (req, res) => {
 app.get("/u/:id", (req, res) => {
   const shortURL = req.params.id;
   if (!Object.keys(urlDatabase).includes(shortURL)) {
-    return res.send("<html><body>This shortened URL does not exist!</body></html>\n");
+    return res.status(404).send("<html><body>This shortened URL does not exist!</body></html>\n");
   }
   const redirectToUrl = urlDatabase[shortURL].longURL;
   return res.redirect(redirectToUrl);
